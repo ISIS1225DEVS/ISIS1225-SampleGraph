@@ -91,7 +91,7 @@ def addStopConnection(analyzer, lastservice, service):
         origin = formatVertex(lastservice)
         destination = formatVertex(service)
         cleanServiceDistance(lastservice, service)
-        distance = float(service['Distance']) - float(lastservice['Distance'])
+        distance = float(service['tripduration']) - float(lastservice['tripduration'])
         addStop(analyzer, origin)
         addStop(analyzer, destination)
         addConnection(analyzer, origin, destination, distance)
@@ -118,14 +118,14 @@ def addRouteStop(analyzer, service):
     """
     Agrega a una estacion, una ruta que es servida en ese paradero
     """
-    entry = m.get(analyzer['stops'], service['BusStopCode'])
+    entry = m.get(analyzer['stops'], service['start station name'])
     if entry is None:
         lstroutes = lt.newList(cmpfunction=compareroutes)
-        lt.addLast(lstroutes, service['ServiceNo'])
-        m.put(analyzer['stops'], service['BusStopCode'], lstroutes)
+        lt.addLast(lstroutes, service['end station id'])
+        m.put(analyzer['stops'], service['start station name'], lstroutes)
     else:
         lstroutes = entry['value']
-        info = service['ServiceNo']
+        info = service['end station id']
         if not lt.isPresent(lstroutes, info):
             lt.addLast(lstroutes, info)
     return analyzer
@@ -157,6 +157,7 @@ def addConnection(analyzer, origin, destination, distance):
     """
     Adiciona un arco entre dos estaciones
     """
+
     edge = gr.getEdge(analyzer['connections'], origin, destination)
     if edge is None:
         gr.addEdge(analyzer['connections'], origin, destination, distance)
@@ -246,10 +247,10 @@ def cleanServiceDistance(lastservice, service):
     En caso de que el archivo tenga un espacio en la
     distancia, se reemplaza con cero.
     """
-    if service['Distance'] == '':
-        service['Distance'] = 0
-    if lastservice['Distance'] == '':
-        lastservice['Distance'] = 0
+    if service['tripduration'] == '':
+        service['tripduration'] = 0
+    if lastservice['tripduration'] == '':
+        lastservice['tripduration'] = 0
 
 
 def formatVertex(service):
@@ -257,8 +258,8 @@ def formatVertex(service):
     Se formatea el nombrer del vertice con el id de la estación
     seguido de la ruta.
     """
-    name = service['BusStopCode'] + '-'
-    name = name + service['ServiceNo']
+    name = service['start station name'] + '-'
+    name = name + service['end station id']
     return name
 
 

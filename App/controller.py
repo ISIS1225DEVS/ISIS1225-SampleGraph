@@ -71,8 +71,8 @@ def loadServices(analyzer, servicesfile):
     lastservice = None
     for service in input_file:
         if lastservice is not None:
-            sameservice = lastservice['ServiceNo'] == service['ServiceNo']
-            samedirection = lastservice['Direction'] == service['Direction']
+            sameservice = lastservice['start station id'] == service['start station id']
+            samedirection = lastservice['end station id'] == service['end station id']
             if sameservice and samedirection:
                 model.addStopConnection(analyzer, lastservice, service)
         lastservice = service
